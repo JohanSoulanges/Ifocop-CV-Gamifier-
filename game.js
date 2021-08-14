@@ -1,10 +1,14 @@
 'usestrict';
-//Canvas setup
+// Canvas setup
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-//width et height doivent etre les mêmes que dans le CSS
+
+// width et height doivent etre les mêmes que dans le CSS
+// passer with et height on pourcentage pour quelle prenne toujours la même place 
+// même si on reduit ou agrandie la vue
 canvas.width = 800;
 canvas.height = 500;
+
 
 let cv = false;
 let start = false;
@@ -27,6 +31,7 @@ image.bombe = new Image();
 image.bombe.src = "./asset/Bomb.png";
 image.bonus = new Image();
 image.bonus.src = "./asset/Bonus.png";
+
 //Parallax Background
 const background = []
 background[0] = new Image();
@@ -43,6 +48,7 @@ parallax[2].src = "./asset/parallax/parallax05.png";
 
 let h = 0
 let m = canvas.width
+
 //cette fonction fait apparaitre les deux images background fixe et fait defiler les trois images parallax indentique a la suite pour l'effet parallax.
 function drawBack(){
     ctx.drawImage(background[0], 0, 0, canvas.width,canvas.height);
