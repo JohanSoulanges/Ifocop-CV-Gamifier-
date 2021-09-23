@@ -1,0 +1,18 @@
+To-Do :
+
+	1.
+	la vue s'ajuste en fonction de la taille de la fenètre. 50%
+	reparer la vue ( le fullScreen mode est mal ajusté ) 50%
+	reparer la size des items ( la taille des items et du player ne sont pas ajusté par rapport a la taille de la vue )
+	changer la valeur de la hauteur de jump ( actuellement 200 mettre un variable qui change en fonction de la taille de la vue )
+	faire un système qui va gérer tout les tailles ( canvas, player, items )	
+	2.
+	ajouter une pause
+	ajouter une action d'attaque qui rend invinsible
+	ajouter une animation de mort pour le player
+	ajouter une animation de mort pour les bombes
+	ajouter une fonction recommencer 
+Already :
+	
+	reparer le colission en debut et fin de canvas ( définir la limite de fin et début du jeu ).
+	reparer le jump ( valeur trop aléatoire trouver un logique )

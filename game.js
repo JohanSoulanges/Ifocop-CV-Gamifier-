@@ -4,18 +4,39 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 // width et height doivent etre les mêmes que dans le CSS
-// passer with et height on pourcentage pour quelle prenne toujours la même place 
+// passer with et height on inner/outer width et height pour quelle prenne toujours la même place 
 // même si on reduit ou agrandie la vue
-canvas.width = 800;
-canvas.height = 500;
+
+canvas.width = window.innerWidth - 50;
+canvas.height = window.innerHeight - 120;
+
+window.addEventListener('resize',resizeCheck, false)
+function resizeCheck(e) {
+    console.log(e);
+    console.log(e.currentTarget.innerWidth);
+    console.log(e.currentTarget.innerHeight);
+    canvas.width = e.currentTarget.innerWidth - 50
+    canvas.height = e.currentTarget.innerHeight - 120;
+    player.y = canvas.height - 90;
+    size = true;
+}
+
+
+console.log("width",canvas.width);
+console.log("height",canvas.height);
+console.log(window);
+
 
 
 let cv = false;
+let size = false;
 let start = false;
+let pause = false;
+let inJump = false;
 let score = 0;
 let gameFrame = 0;
 let e = 0;
-ctx.font = '50px Georgia'
+
 const sound = {};
 sound.background = new Audio();
 sound.background.src = "./asset/Song/BackgroundSong.ogg"
@@ -46,35 +67,39 @@ parallax[1].src = "./asset/parallax/parallax04.png";
 parallax[2] = new Image();
 parallax[2].src = "./asset/parallax/parallax05.png";
 
-let h = 0
-let m = canvas.width
+let h = 0;
+let m = canvas.width;
+
+function draw0(){
+    ctx.beginPath();
+    ctx.moveTo(5,0);
+    ctx.lineTo(5, canvas.height);
+    ctx.fillStyle = 'red'
+    ctx.moveTo(canvas.width - 5,0);
+    ctx.lineTo(canvas.width - 5, canvas.height);
+    ctx.fillStyle = 'blue';
+    ctx.stroke();
+}
 
 //cette fonction fait apparaitre les deux images background fixe et fait defiler les trois images parallax indentique a la suite pour l'effet parallax.
 function drawBack(){
     ctx.drawImage(background[0], 0, 0, canvas.width,canvas.height);
     ctx.drawImage(background[1], 0, 0, canvas.width,canvas.height);    
     for (let i = 0; i < parallax.length; i++) {
-        ctx.drawImage(parallax[i], h, 0, canvas.width,canvas.height)
-        h-=0.5;        
-        if(h == -canvas.width){
-            h = 0
-        }
+            ctx.drawImage(parallax[i], h, 0, canvas.width*2,canvas.height)
+            h-=0.5;      
+            if(h <= -canvas.width){
+                h = 0
+            }
     }
-    for (let i = 0; i < parallax.length; i++) {
-        ctx.drawImage(parallax[i], m, 0, canvas.width,canvas.height)
-        m-=0.5;
-        if(m == 0){
-            m = canvas.width;
-        }
-    }
+    
 }
 
 //Key Interaction
 //cette fonction permet d'intéragir avec les touches du clavier
 
 window.addEventListener('keydown',keyDownHandler,false); 
-function keyDownHandler(e){ 
-    console.log(e)    
+function keyDownHandler(e){  
     if(e.key == "Right" || e.key == "ArrowRight") {
         player.pressRight = true;
     }
@@ -87,6 +112,15 @@ function keyDownHandler(e){
     }
     if(e.key == "Down " || e.key == "ArrowDown") {
         player.pressDown = true;  
+    }
+    if(e.key === "p" || e.key === "P") {
+        console.log(pause);
+        if (pause === false) {
+            pause = true;
+        } else {
+            pause = false
+        }
+        gamePause()
     }
 };
 
@@ -107,16 +141,16 @@ function keyUpHandler(e) {
 // méthodes qui lui sont propres pour allégé l'espace mémoire
 class Player {
     constructor(){
-        this.x = canvas.width/2 ;
-        this.y = 400 ;
         this.width = 90;
         this.height= 90;
+        this.x = canvas.width/2 ;
+        this.y = canvas.height- this.height ;
         this.angle = 0;
         this.spriteWidth = 45;
         this.spriteHeight = 45;
-        this. speed = 10;
-        this. jump = 15;
-        this. down = 40;
+        this.speed = 10;
+        this.jump = 15;
+        this.down = 40;
         this.pressLeft = false;
         this.pressRight = false;
         this.pressUp = false;
@@ -170,33 +204,46 @@ class Player {
                 {frameX: 548,
                 frameY : 385,}]
     };
+    
     //cette fonction defini les mouvement du player
-    update(){
-        if(this.pressRight){
+    update(){ 
+        if (canvas.height <= 540 && canvas.width <= 960) {
+            this.height = 60;
+            this.width = 60;
+        }
+        if(this.pressRight && pause === false){
+            console.log(this.x);
             this.x += this.speed;
             this. speed = 10;
-            if(this.x == 710){
+            if(this.x >= canvas.width - 90){
                 this.speed = 0
             }
         }
-        if(this.pressLeft){
+        if(this.pressLeft && pause === false){
+            console.log(this.x);
             this.x -= this.speed;
             this. speed = 10;
-            if(this.x == 0){
+            if(this.x <= 0 ){
                 this.speed = 0
             }
         }
-        if(this.pressUp ){
-            this.y +=  -this.jump;
-             if(this.y < 200){
+        if(this.pressUp && pause === false){
+            this.y += -this.jump;
+            inJump = true;
+            console.log("this y", this.y);
+            console.log("ici 3");
+             if(this.y < 0){
+                 console.log("ici 2");
                 this.jump = - this.jump;
              }
-             if(this.y == 405 || this.y == 400 ){
+             if(this.y == canvas.height - this.width ){
+                 console.log("ici 1");
                 this.pressUp = false;
                 this.jump = -this.jump;
+                inJump = false;
              };
         }
-        if(this.pressDown){
+        if(this.pressDown && inJump === false && pause === false){
             this.y +=  this.down;
             this.height= 70;
             this.position = this.positionDown
@@ -204,7 +251,7 @@ class Player {
                 this.down = 0;
             }
         }
-        if(this.pressDown == 'up'){
+        if(this.pressDown == 'up' && inJump === false && pause === false){
             console.log('ok2')
             this.down = 40;
             this.y +=  -this.down;
@@ -298,6 +345,10 @@ class Ennemi{
     //cette methode fait parcourir l'ennemi de droite a gauche
     update(){
         this.x -= this.speed;
+        if (canvas.height <= 540 && canvas.width <= 960) {
+            this.height = 40;
+            this.width = 40;
+        }
     }
     //cette fonction desine la hit-box 
     draw(){
@@ -315,15 +366,17 @@ class Ennemi{
 function handleEnnemi(){
     //cette ligne dit que toute les 60 frame un bombe peux apparaitre
     //grace push
-    if (gameFrame % 60 == 0){
+    if (gameFrame % 60 == 0 && pause ===false){
         ennemiArray.push(new Ennemi());
     }
     // execute divers méthode ennemiArray
-    for(let i = 0; i < ennemiArray.length; i++){
-        ennemiArray[i].update();
-        //cette fonction desine la hit-box de l'ennemi
-        //ennemiArray[i].draw();
-        ennemiArray[i].drawEnnemi(image.bombe, ennemiArray[i].position[e].frameX, ennemiArray[i].position[e].frameY, ennemiArray[i].spriteHeight, ennemiArray[i].spriteWidth, ennemiArray[i].x, ennemiArray[i].y, ennemiArray[i].height, ennemiArray[i].width);
+    if (pause === false) {
+        for(let i = 0; i < ennemiArray.length; i++){
+            ennemiArray[i].update();
+            //cette fonction desine la hit-box de l'ennemi
+            //ennemiArray[i].draw();
+            ennemiArray[i].drawEnnemi(image.bombe, ennemiArray[i].position[e].frameX, ennemiArray[i].position[e].frameY, ennemiArray[i].spriteHeight, ennemiArray[i].spriteWidth, ennemiArray[i].x, ennemiArray[i].y, ennemiArray[i].height, ennemiArray[i].width);
+        } 
     }
     // si la bombe sort de l'ecran elle est effacé de Array avec la fonction splice
     for(let i = 0; i < ennemiArray.length; i++){
@@ -371,6 +424,10 @@ class Take{
     //cette methode fait parcourir l'ennemi de droite a gauche
     update(){
         this.x -= this.speed;
+        if (canvas.height <= 540 && canvas.width <= 960) {
+            this.height = 30;
+            this.width = 30;
+        }
     }
     //cette fonction desine la hit-box 
     draw(){
@@ -388,15 +445,17 @@ class Take{
 function handleTake(){
     //cette ligne dit que toute les 60 frame un take peux apparaitre
     //grace push
-    if (gameFrame % 150 == 0){
+    if (gameFrame % 150 == 0 && pause ===false){
         takeArray.push(new Take());
     }
     // execute divers méthode takeArray
-    for(let i = 0; i < takeArray.length; i++){
-        takeArray[i].update();
-        //cette fonction desine la hit-box 
-        //takeArray[i].draw();
-        takeArray[i].drawBonus();
+    if (pause === false) {
+        for(let i = 0; i < takeArray.length; i++){
+            takeArray[i].update();
+            //cette fonction desine la hit-box 
+            //takeArray[i].draw();
+            takeArray[i].drawBonus();
+        } 
     }
      // si le take sort de l'ecran elle est effacé de Array avec la fonction splice
     for(let i = 0; i < takeArray.length; i++){
@@ -416,6 +475,37 @@ function handleTake(){
     }
 }
 
+// Pause
+function gamePause() {
+    if(pause === true ) {
+        console.log("pausse check");
+        player.speed = 0;
+        player.jump = 0;
+        ennemiArray.forEach(Ennemi => {
+            Ennemi.speed = 0;
+        }); 
+        takeArray.forEach(take => {
+            take.speed = 0;
+        });
+        
+        // faire apparaitre l'animation de pause
+        // style ecran gris transparent avec pause ecrit au milieu
+        // n'oublie pas j'ajouter un tutorial pour faire comprendre 
+        // a l'utilisateur tout le fonctionnalité.
+    } else {
+        console.log("pausse done");
+        player.speed = 10;
+        player.jump = 15;
+        ennemiArray.forEach(Ennemi => {
+            Ennemi.speed = 4;
+        });
+        takeArray.forEach( take => {
+            take.speed = 3;
+        });
+    }
+}
+
+
 //Animation Loop
 let timestamp = 0;
 let timestampPrecedent;
@@ -428,7 +518,7 @@ function animate(timestamp){
             sound.background.play();
             //efface le canvas pour chaque nouvelle image
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBack();
+            drawBack()
             handleEnnemi();
             handleTake();
             // condition qui permet d'avoir un animation fluide avec requestAnimationFrame
@@ -455,12 +545,22 @@ function animate(timestamp){
             //cette fonction desine la hit-box du player
             //player.draw();
             //cette fonction desine le player
-            player.drawPlayer(image.player, player.position[i].frameX, player.position[i].frameY, player.spriteHeight, player.spriteWidth, player.x, player.y, player.height, player.width)
             player.update();
+            player.drawPlayer(image.player, player.position[i].frameX, player.position[i].frameY, player.spriteHeight, player.spriteWidth, player.x, player.y, player.height, player.width)
             //dessine et mise a jour de la vie et du score
+            ctx.font = '50px Georgia'
             ctx.fillStyle ='black';
-            ctx.fillText('score: ' + score , 10, 50);
-            ctx.fillText('vie: ' + player.life , 620, 50)
+            ctx.fillText('score: ' + score , 10, 50, 100);
+            ctx.fillText('vie: ' + player.life , canvas.width - 125, 50, 100)
+            if (pause === true) {
+                const pauseStyle = ctx.createLinearGradient(0,0,canvas.width,canvas.height)
+                // don't work like a want
+                pauseStyle.addColorStop(0 , "#D9D2D1")
+                pauseStyle.addColorStop(0.5, "#fff")
+                //
+                ctx.fillStyle = pauseStyle;
+                ctx.fillText(" PAUSE ", 250, 250)    
+            }
             gameFrame++
             requestAnimationFrame(animate);
             if(player.life == 0){
@@ -480,8 +580,8 @@ function animate(timestamp){
 // fonction pour start le jeu
 document.getElementById('input').addEventListener('click',function(){
     document.getElementById('start').style.display = 'none'
-    document.getElementById('cvText').style.display = 'block'
-    document.getElementById('cv').style.display = 'block'
+    document.getElementById('cvText').style.display = 'none'
+    document.getElementById('cv').style.display = 'none'
     document.getElementById('canvas').style.display = 'block'
     animate()
     document.getElementById('input').style.display = 'none'

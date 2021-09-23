@@ -1,0 +1,42 @@
+ Pausse
+ Faire apparraitre un bouttom avec le symbole de pause (ou dire que un certain bouttom est a appuyer pour entre dans le mode pause) DONE
+ Faire en sort que le mode pause assombrisse l'ecran et indique que le joueur est en mode pause DONE
+ Quand un click est effectuer stop le timespamp DONE
+ Et faire en sorte que tout action du joueur soit impossible DONE
+ Stopper tout les action des items DONE
+ Un fois un nouveau click effectuer faire en sorte que tout reparte DONE
+ !!!! ATTENTION PAUSSE EN PLIEN JUMP !!!! DONE
+ SITUATION A TESTER 
+ 
+ la logique du jump est diminuer la valeur y par jump avant la valeur 200 puit la faire augmenter pour qu'il retourne a la normal
+ la valuer fixe 200 doit changer mettre un variable en fonction de la taille de la vue
+
+ Crouch in jump
+ when the player crouch in jump, is avatar go under the stage DONE
+ How: now when the user jump, inJump = true and the user can't crouch until is avatar touch the ground and 
+ at is moment inJump = false.
+
+ Resize parralax
+ when the window is rize, parralax is decal DONE
+ How: the parralax is two image, when the first end the second take is place and vise-versa.
+ but a problem append when the user resize the window. To fix this the parralaxhave now only one image,
+ then is always fit the window.
+
+ Resize text
+ when the window rize, information text is not in the good position and format DONE BUT CAN BE BETTER
+ how: you need to set the font (ctx.font) for this text a line before the text (ctx.fillText).
+
+ Jump problem when size is medium
+ when the window size is medium avatar can't do a corret jump. don't define a prop who change a status
+
+ Resize size of the avatar and items
+ when the window rize, User avatar and items should rize too
+
+ Design of the page
+ this design is just horrible do a remake
+
+ Phone devise
+ the game need to be on phone and tablette to
+
+ Difference between pc and tablette
+ the game need to seen the Difference between pc phone and tablette
